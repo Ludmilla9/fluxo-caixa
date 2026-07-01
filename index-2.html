@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#2B2024">
+<title>Caixa · Ludmilla Nail Design</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --tinta: #2B2024;
+    --tinta-2: #4A3B40;
+    --rose: #B76E79;
+    --rose-claro: #E8C4C4;
+    --champagne: #C9A86A;
+    --creme: #FBF8F5;
+    --cartao: #FFFFFF;
+    --linha: #EDE6E2;
+    --cinza: #9A8E8E;
+    --cinza-2: #6B5E5E;
+    --verde: #4E8F6D;
+    --verde-bg: #EDF5F0;
+    --vinho: #B5485B;
+    --vinho-bg: #FBEEF0;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--creme); color: var(--tinta); min-height: 100vh; padding: 0 0 96px; }
+  header { background: var(--tinta); color: #fff; padding: 22px 22px 26px; }
+  .marca { display: flex; align-items: center; justify-content: space-between; }
+  .marca .nome { font-family: Georgia, 'Times New Roman', serif; font-size: 15px; letter-spacing: 2px; text-transform: uppercase; font-weight: 400; }
+  .marca .nome b { color: var(--champagne); font-weight: 600; }
+  .sync { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: #B8AEAE; }
+  .sync .dot { width: 7px; height: 7px; border-radius: 50%; background: #66756C; }
+  .sync.on .dot { background: #7FD7A8; }
+  .nav-mes { display: flex; align-items: center; justify-content: space-between; margin-top: 22px; }
+  .nav-mes button { background: rgba(255,255,255,0.08); border: none; color: #fff; width: 34px; height: 34px; border-radius: 9px; font-size: 17px; cursor: pointer; }
+  .nav-mes button:active { background: rgba(255,255,255,0.18); }
+  .nav-mes .rotulo { text-align: center; }
+  .nav-mes .rotulo .mes { font-size: 17px; font-weight: 600; text-transform: capitalize; }
+  .nav-mes .rotulo .ano { font-size: 12px; color: #B8AEAE; letter-spacing: 1px; }
+  .saldo-hero { margin-top: 22px; }
+  .saldo-hero .lab { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: #B8AEAE; }
+  .saldo-hero .val { font-family: Georgia, serif; font-size: 38px; font-weight: 600; margin-top: 3px; letter-spacing: -0.5px; }
+  .saldo-hero .val .cur { font-size: 17px; color: var(--champagne); font-weight: 400; vertical-align: 0.4em; margin-right: 4px; letter-spacing: 1px; }
+  .saldo-hero .comp { font-size: 12px; margin-top: 7px; color: #B8AEAE; }
+  .saldo-hero .comp b.up { color: #7FD7A8; }
+  .saldo-hero .comp b.down { color: #E69AAB; }
+  .container { max-width: 560px; margin: 0 auto; padding: 0 16px; }
+  .duo { display: flex; gap: 11px; margin-top: -16px; position: relative; z-index: 5; }
+  .duo .c { flex: 1; background: var(--cartao); border-radius: 14px; padding: 14px 15px; box-shadow: 0 4px 16px rgba(43,32,36,0.07); border: 1px solid var(--linha); }
+  .duo .c .top { display: flex; align-items: center; gap: 7px; font-size: 11.5px; color: var(--cinza); letter-spacing: 0.5px; text-transform: uppercase; }
+  .duo .c .marca-cor { width: 8px; height: 8px; border-radius: 50%; }
+  .duo .c.ent .marca-cor { background: var(--verde); }
+  .duo .c.sai .marca-cor { background: var(--vinho); }
+  .duo .c .num { font-size: 19px; font-weight: 700; margin-top: 6px; font-family: Georgia, serif; }
+  .duo .c.ent .num { color: var(--verde); }
+  .duo .c.sai .num { color: var(--vinho); }
+  .secao-titulo { display: flex; align-items: baseline; justify-content: space-between; margin: 26px 4px 13px; }
+  .secao-titulo .t { font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--cinza-2); font-weight: 600; }
+  .secao-titulo .x { font-size: 11px; color: var(--cinza); }
+  .painel { background: var(--cartao); border-radius: 16px; padding: 18px; border: 1px solid var(--linha); box-shadow: 0 2px 10px rgba(43,32,36,0.04); }
+  .cat-row { margin-bottom: 15px; }
+  .cat-row:last-child { margin-bottom: 0; }
+  .cat-row .cab { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+  .cat-row .cab .nome { font-size: 13.5px; font-weight: 500; color: var(--tinta); }
+  .cat-row .cab .val { font-size: 13px; font-weight: 600; color: var(--cinza-2); }
+  .cat-row .cab .val .pct { font-size: 11px; color: var(--cinza); font-weight: 400; margin-left: 5px; }
+  .cat-bar-bg { height: 7px; background: var(--linha); border-radius: 6px; overflow: hidden; }
+  .cat-bar-fill { height: 100%; border-radius: 6px; transition: width 0.5s ease; }
+  .donut-wrap { display: flex; align-items: center; gap: 18px; }
+  .donut-canvas { flex: 0 0 130px; height: 130px; position: relative; }
+  .donut-centro { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; }
+  .donut-centro .l { font-size: 10px; color: var(--cinza); letter-spacing: 1px; text-transform: uppercase; }
+  .donut-centro .v { font-size: 15px; font-weight: 700; font-family: Georgia, serif; color: var(--vinho); margin-top: 2px; }
+  .legenda { flex: 1; }
+  .legenda .li { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 12.5px; }
+  .legenda .li:last-child { margin-bottom: 0; }
+  .legenda .li .pt { width: 9px; height: 9px; border-radius: 2px; flex: 0 0 auto; }
+  .legenda .li .nm { flex: 1; color: var(--cinza-2); }
+  .legenda .li .vl { font-weight: 600; color: var(--tinta); }
+  .filtros { display: flex; gap: 8px; margin: 22px 0 0; overflow-x: auto; padding-bottom: 2px; }
+  .filtros button { flex: 0 0 auto; background: var(--cartao); border: 1px solid var(--linha); color: var(--cinza-2); padding: 8px 15px; border-radius: 20px; font-size: 13px; cursor: pointer; white-space: nowrap; }
+  .filtros button.ativo { background: var(--tinta); color: #fff; border-color: var(--tinta); }
+  .lanc { display: flex; align-items: center; gap: 13px; background: var(--cartao); border: 1px solid var(--linha); border-radius: 13px; padding: 13px 15px; margin-bottom: 8px; }
+  .lanc .marca-lat { flex: 0 0 3px; align-self: stretch; border-radius: 3px; }
+  .lanc.ent .marca-lat { background: var(--verde); }
+  .lanc.sai .marca-lat { background: var(--vinho); }
+  .lanc .info { flex: 1; min-width: 0; }
+  .lanc .desc { font-size: 14.5px; font-weight: 500; }
+  .lanc .meta { font-size: 11.5px; color: var(--cinza); margin-top: 3px; letter-spacing: 0.3px; }
+  .lanc .valor { font-size: 15px; font-weight: 700; font-family: Georgia, serif; white-space: nowrap; }
+  .lanc.ent .valor { color: var(--verde); }
+  .lanc.sai .valor { color: var(--vinho); }
+  .lanc .acoes { display: flex; gap: 2px; }
+  .lanc .acoes button { background: none; border: none; cursor: pointer; padding: 5px; color: var(--cinza); font-size: 14px; }
+  .lanc .acoes button:active { color: var(--rose); }
+  .vazio { text-align: center; color: var(--cinza); padding: 44px 20px; font-size: 13.5px; line-height: 1.6; }
+  .vazio .ic { font-size: 30px; opacity: 0.4; display: block; margin-bottom: 10px; }
+  .fab { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--tinta); color: #fff; border: none; padding: 15px 28px; border-radius: 14px; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 8px 24px rgba(43,32,36,0.28); z-index: 50; letter-spacing: 0.3px; display: flex; align-items: center; gap: 8px; }
+  .fab .plus { color: var(--champagne); font-size: 19px; line-height: 1; }
+  .fab:active { transform: translateX(-50%) scale(0.97); }
+  .modal-bg { position: fixed; inset: 0; background: rgba(43,32,36,0.5); display: none; align-items: flex-end; justify-content: center; z-index: 100; }
+  .modal-bg.aberto { display: flex; }
+  .modal { background: var(--creme); width: 100%; max-width: 560px; border-radius: 22px 22px 0 0; padding: 8px 20px 28px; max-height: 94vh; overflow-y: auto; animation: sobe 0.28s cubic-bezier(0.2,0.8,0.2,1); }
+  @keyframes sobe { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .modal .puxador { width: 38px; height: 4px; background: var(--linha); border-radius: 4px; margin: 8px auto 16px; }
+  .modal h2 { font-family: Georgia, serif; font-size: 19px; text-align: center; margin-bottom: 20px; font-weight: 600; }
+  .tipo-toggle { display: flex; gap: 0; margin-bottom: 20px; background: var(--cartao); border: 1px solid var(--linha); border-radius: 12px; padding: 4px; }
+  .tipo-toggle button { flex: 1; padding: 11px; border-radius: 9px; border: none; background: none; font-size: 14px; font-weight: 600; cursor: pointer; color: var(--cinza); transition: all 0.15s; }
+  .tipo-toggle button.sel-ent { background: var(--verde); color: #fff; }
+  .tipo-toggle button.sel-sai { background: var(--vinho); color: #fff; }
+  .campo { margin-bottom: 15px; }
+  .campo label { display: block; font-size: 11.5px; letter-spacing: 0.5px; text-transform: uppercase; color: var(--cinza-2); font-weight: 600; margin-bottom: 7px; }
+  .campo input, .campo select { width: 100%; padding: 14px; border: 1px solid var(--linha); border-radius: 11px; font-size: 16px; color: var(--tinta); outline: none; background: var(--cartao); font-family: inherit; }
+  .campo input:focus, .campo select:focus { border-color: var(--rose); }
+  .campo.valor-grande input { font-size: 26px; font-weight: 700; font-family: Georgia, serif; text-align: center; padding: 16px; }
+  .modal-botoes { display: flex; gap: 10px; margin-top: 22px; }
+  .modal-botoes button { flex: 1; padding: 15px; border-radius: 12px; border: none; font-size: 15px; font-weight: 600; cursor: pointer; }
+  .btn-cancelar { background: var(--cartao); border: 1px solid var(--linha) !important; color: var(--cinza-2); }
+  .btn-salvar { background: var(--tinta); color: #fff; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+  <header>
+    <div class="marca">
+      <div class="nome">Ludmilla <b>Nail Design</b></div>
+      <div class="sync" id="sync"><span class="dot"></span><span id="sync-txt">···</span></div>
+    </div>
+    <div class="nav-mes">
+      <button onclick="mudarMes(-1)">&lsaquo;</button>
+      <div class="rotulo"><div class="mes" id="mesNome">—</div><div class="ano" id="mesAno"></div></div>
+      <button onclick="mudarMes(1)">&rsaquo;</button>
+    </div>
+    <div class="saldo-hero">
+      <div class="lab">Saldo do mês</div>
+      <div class="val" id="saldoMes"><span class="cur">CHF</span>0.00</div>
+      <div class="comp" id="comparativo">—</div>
+    </div>
+  </header>
+  <div class="container">
+    <div class="duo">
+      <div class="c ent"><div class="top"><span class="marca-cor"></span>Entradas</div><div class="num" id="entMes">CHF 0.00</div></div>
+      <div class="c sai"><div class="top"><span class="marca-cor"></span>Saídas</div><div class="num" id="saiMes">CHF 0.00</div></div>
+    </div>
+    <div class="secao-titulo"><span class="t">Para onde foi o dinheiro</span><span class="x" id="totalSaidasCat"></span></div>
+    <div class="painel" id="painelDonut">
+      <div class="donut-wrap">
+        <div class="donut-canvas"><canvas id="donut"></canvas>
+          <div class="donut-centro"><div class="l">Saídas</div><div class="v" id="donutCentro">CHF 0</div></div>
+        </div>
+        <div class="legenda" id="legenda"></div>
+      </div>
+    </div>
+    <div class="secao-titulo"><span class="t">Detalhe por categoria</span></div>
+    <div class="painel" id="painelCategorias"></div>
+    <div class="filtros" id="filtros">
+      <button class="ativo" data-f="todos" onclick="setFiltro('todos')">Todos</button>
+      <button data-f="entrada" onclick="setFiltro('entrada')">Entradas</button>
+      <button data-f="saida" onclick="setFiltro('saida')">Saídas</button>
+    </div>
+    <div class="secao-titulo"><span class="t">Lançamentos</span><span class="x" id="contLanc"></span></div>
+    <div id="listaLancamentos"></div>
+  </div>
+  <button class="fab" onclick="abrirModal()"><span class="plus">+</span> Novo lançamento</button>
+  <div class="modal-bg" id="modalBg">
+    <div class="modal">
+      <div class="puxador"></div>
+      <h2 id="modalTitulo">Novo lançamento</h2>
+      <div class="tipo-toggle">
+        <button id="btnEntrada" onclick="setTipo('entrada')">Entrada</button>
+        <button id="btnSaida" onclick="setTipo('saida')">Saída</button>
+      </div>
+      <div class="campo valor-grande"><label>Valor em CHF</label><input type="number" id="campoValor" inputmode="decimal" placeholder="0.00" step="0.05"></div>
+      <div class="campo so-entrada"><label>Cliente</label><input type="text" id="campoCliente" placeholder="Nome da cliente"></div>
+      <div class="campo so-entrada"><label>Serviço</label><select id="campoServico" onchange="checarServicoOutro()"></select></div>
+      <div class="campo so-entrada" id="campoServicoOutroWrap" style="display:none;"><label>Qual serviço?</label><input type="text" id="campoServicoOutro" placeholder="Digite o serviço"></div>
+      <div class="campo"><label>Descrição</label><input type="text" id="campoDesc" placeholder="Ex: Compra de esmaltes"></div>
+      <div class="campo"><label>Categoria</label><select id="campoCategoria"></select></div>
+      <div class="campo"><label>Data</label><input type="date" id="campoData"></div>
+      <div class="modal-botoes">
+        <button class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
+        <button class="btn-salvar" onclick="salvarLancamento()">Salvar</button>
+      </div>
+    </div>
+  </div>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyB1mu2Nfcx5d6x--tlyguFZn7UuZC2Mjs",
+    authDomain: "lista-compras-ludmilla.firebaseapp.com",
+    databaseURL: "https://lista-compras-ludmilla-default-rtdb.firebaseio.com",
+    projectId: "lista-compras-ludmilla",
+    storageBucket: "lista-compras-ludmilla.firebasestorage.app",
+    messagingSenderId: "607047869506",
+    appId: "1:607047869506:web:4f40c96b5d9713bbd1f9db"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  const fluxoRef = db.ref('fluxoCaixa');
+
+  const categoriasEntrada = ['Serviços (unhas)', 'Serviços (EMS)', 'Serviços (cílios)', 'Venda de produtos', 'Outros'];
+  const categoriasSaida = ['Material', 'Aluguel', 'Transporte', 'Comida', 'Equipamentos', 'Marketing', 'Contas', 'Outros'];
+  const coresSaida = ['#B5485B','#C9A86A','#8C6D7A','#A8745C','#6B8E7F','#B08968','#9A8E8E','#7A6A70'];
+  const servicos = ['Alongamento', 'Manutenção', 'Banho de Gel', 'Manicure semi permanente', 'Pedicure semi permanente', 'Máquina EMS', 'Cílios Pose', 'Cílios Manutenção', 'Produtos da Boticário', 'Outro'];
+
+  let lancamentos = {}, mesVisivel = new Date(), tipoAtual = 'saida', editandoId = null, filtroAtual = 'todos', donutChart = null;
+  const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const sync = document.getElementById('sync'), syncTxt = document.getElementById('sync-txt');
+
+  fluxoRef.on('value', (snap) => {
+    lancamentos = snap.val() || {};
+    sync.classList.add('on'); syncTxt.textContent = 'Sincronizado';
+    render();
+  }, () => { syncTxt.textContent = 'Sem conexão'; });
+
+  function chaveMes(d) { return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0'); }
+  function fmt(v) { return 'CHF ' + Number(v).toLocaleString('de-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function fmtCurto(v) { return Number(v).toLocaleString('de-CH', { minimumFractionDigits: 0, maximumFractionDigits: 0 }); }
+
+  window.mudarMes = function(d) { mesVisivel = new Date(mesVisivel.getFullYear(), mesVisivel.getMonth()+d, 1); render(); };
+  window.setFiltro = function(f) { filtroAtual = f; document.querySelectorAll('#filtros button').forEach(b => b.classList.toggle('ativo', b.dataset.f === f)); renderLista(); };
+  window.setTipo = function(t) {
+    tipoAtual = t;
+    document.getElementById('btnEntrada').className = t === 'entrada' ? 'sel-ent' : '';
+    document.getElementById('btnSaida').className = t === 'saida' ? 'sel-sai' : '';
+    // Mostra os campos de cliente e serviço apenas nas entradas
+    document.querySelectorAll('.so-entrada').forEach(el => {
+      if (el.id === 'campoServicoOutroWrap') return; // controlado à parte
+      el.style.display = t === 'entrada' ? 'block' : 'none';
+    });
+    if (t !== 'entrada') document.getElementById('campoServicoOutroWrap').style.display = 'none';
+    preencherCategorias();
+    preencherServicos();
+  };
+  function preencherServicos(sel) {
+    const e = document.getElementById('campoServico');
+    e.innerHTML = servicos.map(s => '<option' + (s===sel?' selected':'') + '>' + s + '</option>').join('');
+  }
+  window.checarServicoOutro = function() {
+    const val = document.getElementById('campoServico').value;
+    document.getElementById('campoServicoOutroWrap').style.display = (val === 'Outro') ? 'block' : 'none';
+  };
+  function preencherCategorias(sel) {
+    const e = document.getElementById('campoCategoria');
+    const cats = tipoAtual === 'entrada' ? categoriasEntrada : categoriasSaida;
+    e.innerHTML = cats.map(c => '<option' + (c===sel?' selected':'') + '>' + c + '</option>').join('');
+  }
+  window.abrirModal = function() {
+    editandoId = null;
+    document.getElementById('modalTitulo').textContent = 'Novo lançamento';
+    document.getElementById('campoValor').value = '';
+    document.getElementById('campoDesc').value = '';
+    document.getElementById('campoCliente').value = '';
+    document.getElementById('campoServicoOutro').value = '';
+    document.getElementById('campoData').value = new Date().toISOString().slice(0,10);
+    setTipo('saida');
+    document.getElementById('modalBg').classList.add('aberto');
+  };
+  window.editarLanc = function(id) {
+    const l = lancamentos[id]; editandoId = id;
+    document.getElementById('modalTitulo').textContent = 'Editar lançamento';
+    document.getElementById('campoValor').value = l.valor;
+    document.getElementById('campoDesc').value = l.desc || '';
+    document.getElementById('campoCliente').value = l.cliente || '';
+    document.getElementById('campoServicoOutro').value = '';
+    document.getElementById('campoData').value = l.data;
+    setTipo(l.tipo);
+    preencherCategorias(l.categoria);
+    // Se o serviço salvo estiver na lista, seleciona; senão põe em "Outro" e mostra o campo
+    if (l.tipo === 'entrada' && l.servico) {
+      if (servicos.includes(l.servico)) {
+        preencherServicos(l.servico);
+      } else {
+        preencherServicos('Outro');
+        document.getElementById('campoServicoOutroWrap').style.display = 'block';
+        document.getElementById('campoServicoOutro').value = l.servico;
+      }
+    }
+    document.getElementById('modalBg').classList.add('aberto');
+  };
+  window.fecharModal = function() { document.getElementById('modalBg').classList.remove('aberto'); };
+  window.salvarLancamento = function() {
+    const valor = parseFloat(document.getElementById('campoValor').value);
+    const desc = document.getElementById('campoDesc').value.trim();
+    const categoria = document.getElementById('campoCategoria').value;
+    const data = document.getElementById('campoData').value;
+    if (!valor || valor <= 0) { alert('Digite um valor válido.'); return; }
+    if (!data) { alert('Escolha a data.'); return; }
+    const dados = { tipo: tipoAtual, valor, desc, categoria, data };
+    if (tipoAtual === 'entrada') {
+      dados.cliente = document.getElementById('campoCliente').value.trim();
+      let serv = document.getElementById('campoServico').value;
+      if (serv === 'Outro') serv = document.getElementById('campoServicoOutro').value.trim();
+      dados.servico = serv;
+    } else {
+      dados.cliente = '';
+      dados.servico = '';
+    }
+    if (editandoId) fluxoRef.child(editandoId).update(dados);
+    else fluxoRef.push({ ...dados, criado: Date.now() });
+    fecharModal();
+  };
+  window.apagarLanc = function(id) {
+    if (confirm('Apagar "' + (lancamentos[id].desc || 'este lançamento') + '"?')) fluxoRef.child(id).remove();
+  };
+
+  function idsDoMes(d) { const ck = chaveMes(d); return Object.keys(lancamentos).filter(id => (lancamentos[id].data || '').slice(0,7) === ck); }
+  function somas(ids) { let ent = 0, sai = 0; ids.forEach(id => { const l = lancamentos[id]; if (l.tipo==='entrada') ent += +l.valor; else sai += +l.valor; }); return { ent, sai, saldo: ent - sai }; }
+
+  function render() {
+    document.getElementById('mesNome').textContent = meses[mesVisivel.getMonth()];
+    document.getElementById('mesAno').textContent = mesVisivel.getFullYear();
+    const ids = idsDoMes(mesVisivel), s = somas(ids);
+    document.getElementById('saldoMes').innerHTML = '<span class="cur">CHF</span>' + Number(s.saldo).toLocaleString('de-CH',{minimumFractionDigits:2,maximumFractionDigits:2});
+    document.getElementById('entMes').textContent = fmt(s.ent);
+    document.getElementById('saiMes').textContent = fmt(s.sai);
+    const mesAnt = new Date(mesVisivel.getFullYear(), mesVisivel.getMonth()-1, 1);
+    const sAnt = somas(idsDoMes(mesAnt));
+    const comp = document.getElementById('comparativo');
+    if (sAnt.sai > 0) {
+      const dif = ((s.sai - sAnt.sai) / sAnt.sai) * 100, abs = Math.abs(dif).toFixed(0);
+      if (Math.abs(dif) < 1) comp.innerHTML = 'Gastos iguais ao mês anterior';
+      else if (dif > 0) comp.innerHTML = 'Gastou <b class="down">' + abs + '% a mais</b> que ' + meses[mesAnt.getMonth()].toLowerCase();
+      else comp.innerHTML = 'Gastou <b class="up">' + abs + '% a menos</b> que ' + meses[mesAnt.getMonth()].toLowerCase();
+    } else { comp.textContent = ids.length ? 'Primeiro mês com lançamentos' : 'Sem lançamentos neste mês'; }
+    renderCategorias(ids, s.sai); renderDonut(ids, s.sai); renderLista();
+  }
+
+  function gastosPorCategoria(ids) {
+    const m = {};
+    ids.filter(id => lancamentos[id].tipo === 'saida').forEach(id => { const l = lancamentos[id]; m[l.categoria] = (m[l.categoria] || 0) + +l.valor; });
+    return Object.entries(m).sort((a,b) => b[1] - a[1]);
+  }
+  function corCategoria(cat) { const i = categoriasSaida.indexOf(cat); return coresSaida[i >= 0 ? i : coresSaida.length - 1]; }
+
+  function renderCategorias(ids, totalSai) {
+    const dados = gastosPorCategoria(ids), el = document.getElementById('painelCategorias');
+    document.getElementById('totalSaidasCat').textContent = totalSai > 0 ? fmt(totalSai) : '';
+    if (dados.length === 0) { el.innerHTML = '<div class="vazio" style="padding:26px;">Nenhuma saída registrada neste mês.</div>'; return; }
+    el.innerHTML = dados.map(([cat, val]) => {
+      const pct = totalSai > 0 ? (val/totalSai*100) : 0;
+      return '<div class="cat-row"><div class="cab"><span class="nome">' + esc(cat) + '</span><span class="val">' + fmt(val) + '<span class="pct">' + pct.toFixed(0) + '%</span></span></div><div class="cat-bar-bg"><div class="cat-bar-fill" style="width:' + pct + '%;background:' + corCategoria(cat) + '"></div></div></div>';
+    }).join('');
+  }
+
+  function renderDonut(ids, totalSai) {
+    const dados = gastosPorCategoria(ids), painel = document.getElementById('painelDonut'), legenda = document.getElementById('legenda');
+    document.getElementById('donutCentro').textContent = 'CHF ' + fmtCurto(totalSai);
+    if (dados.length === 0) { painel.style.display = 'none'; if (donutChart) { donutChart.destroy(); donutChart = null; } return; }
+    painel.style.display = 'block';
+    const labels = dados.map(d => d[0]), valores = dados.map(d => d[1]), cores = labels.map(corCategoria);
+    legenda.innerHTML = dados.map(([cat, val]) => '<div class="li"><span class="pt" style="background:' + corCategoria(cat) + '"></span><span class="nm">' + esc(cat) + '</span><span class="vl">' + fmt(val) + '</span></div>').join('');
+    const ctx = document.getElementById('donut');
+    if (donutChart) donutChart.destroy();
+    donutChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: { labels, datasets: [{ data: valores, backgroundColor: cores, borderWidth: 0, cutout: '72%' }] },
+      options: { plugins: { legend: { display: false }, tooltip: { enabled: false } }, animation: { duration: 600 }, responsive: true, maintainAspectRatio: false }
+    });
+  }
+
+  function renderLista() {
+    const ids = idsDoMes(mesVisivel).filter(id => filtroAtual === 'todos' ? true : lancamentos[id].tipo === filtroAtual);
+    ids.sort((a,b) => (lancamentos[b].data||'').localeCompare(lancamentos[a].data||'') || (lancamentos[b].criado||0)-(lancamentos[a].criado||0));
+    document.getElementById('contLanc').textContent = ids.length ? (ids.length + (ids.length === 1 ? ' registro' : ' registros')) : '';
+    const el = document.getElementById('listaLancamentos');
+    if (ids.length === 0) { el.innerHTML = '<div class="vazio"><span class="ic">◷</span>Nenhum lançamento aqui ainda.<br>Toque em "Novo lançamento" para começar.</div>'; return; }
+    el.innerHTML = ids.map(id => {
+      const l = lancamentos[id], isEnt = l.tipo === 'entrada', sinal = isEnt ? '+ ' : '− ';
+      let titulo, subtitulo;
+      if (isEnt) {
+        // Entrada: cliente em destaque, serviço + data embaixo
+        titulo = l.cliente ? l.cliente : (l.servico || l.desc || l.categoria);
+        const partes = [];
+        if (l.servico) partes.push(l.servico);
+        else if (l.desc) partes.push(l.desc);
+        partes.push(dataFmt(l.data));
+        subtitulo = partes.join(' · ');
+      } else {
+        titulo = l.desc || l.categoria;
+        subtitulo = l.categoria + ' · ' + dataFmt(l.data);
+      }
+      return '<div class="lanc ' + (isEnt?'ent':'sai') + '"><div class="marca-lat"></div><div class="info"><div class="desc">' + esc(titulo) + '</div><div class="meta">' + esc(subtitulo) + '</div></div><div class="valor">' + sinal + fmt(l.valor).replace('CHF ','') + '</div><div class="acoes"><button onclick="editarLanc(\'' + id + '\')">✎</button><button onclick="apagarLanc(\'' + id + '\')">✕</button></div></div>';
+    }).join('');
+  }
+
+  function dataFmt(d) { if (!d) return ''; const p = d.split('-'); return p[2] + '/' + p[1] + '/' + p[0].slice(2); }
+  function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  document.getElementById('modalBg').addEventListener('click', e => { if (e.target.id === 'modalBg') fecharModal(); });
+  setTipo('saida');
+</script>
+</body>
+</html>
