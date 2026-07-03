@@ -58,6 +58,11 @@
   .duo .c .num { font-size: 19px; font-weight: 700; margin-top: 6px; font-family: Georgia, serif; }
   .duo .c.ent .num { color: var(--verde); }
   .duo .c.sai .num { color: var(--vinho); }
+  .pag-resumo { display: flex; gap: 11px; }
+  .pag-card { flex: 1; background: var(--cartao); border: 1px solid var(--linha); border-radius: 14px; padding: 13px 14px; display: flex; align-items: center; gap: 11px; box-shadow: 0 2px 10px rgba(43,32,36,0.04); }
+  .pag-card .pag-ic { font-size: 22px; flex: 0 0 auto; }
+  .pag-card .pag-nome { font-size: 11.5px; color: var(--cinza); letter-spacing: 0.5px; text-transform: uppercase; }
+  .pag-card .pag-val { font-size: 16px; font-weight: 700; font-family: Georgia, serif; color: var(--tinta); margin-top: 2px; }
   .secao-titulo { display: flex; align-items: baseline; justify-content: space-between; margin: 26px 4px 13px; }
   .secao-titulo .t { font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--cinza-2); font-weight: 600; }
   .secao-titulo .x { font-size: 11px; color: var(--cinza); }
@@ -112,6 +117,9 @@
   .tipo-toggle button { flex: 1; padding: 11px; border-radius: 9px; border: none; background: none; font-size: 14px; font-weight: 600; cursor: pointer; color: var(--cinza); transition: all 0.15s; }
   .tipo-toggle button.sel-ent { background: var(--verde); color: #fff; }
   .tipo-toggle button.sel-sai { background: var(--vinho); color: #fff; }
+  .pag-toggle { display: flex; gap: 10px; }
+  .pag-toggle button { flex: 1; padding: 13px; border-radius: 11px; border: 1.5px solid var(--linha); background: var(--cartao); font-size: 14px; font-weight: 600; cursor: pointer; color: var(--cinza-2); transition: all 0.15s; }
+  .pag-toggle button.sel { background: var(--tinta); color: #fff; border-color: var(--tinta); }
   .campo { margin-bottom: 15px; }
   .campo label { display: block; font-size: 11.5px; letter-spacing: 0.5px; text-transform: uppercase; color: var(--cinza-2); font-weight: 600; margin-bottom: 7px; }
   .campo input, .campo select { width: 100%; padding: 14px; border: 1px solid var(--linha); border-radius: 11px; font-size: 16px; color: var(--tinta); outline: none; background: var(--cartao); font-family: inherit; }
@@ -145,6 +153,17 @@
     <div class="duo">
       <div class="c ent"><div class="top"><span class="marca-cor"></span>Entradas</div><div class="num" id="entMes">CHF 0.00</div></div>
       <div class="c sai"><div class="top"><span class="marca-cor"></span>Saídas</div><div class="num" id="saiMes">CHF 0.00</div></div>
+    </div>
+    <div class="secao-titulo"><span class="t">Entradas por forma de pagamento</span></div>
+    <div class="pag-resumo">
+      <div class="pag-card">
+        <div class="pag-ic">💵</div>
+        <div class="pag-info"><div class="pag-nome">Dinheiro</div><div class="pag-val" id="totDinheiro">CHF 0.00</div></div>
+      </div>
+      <div class="pag-card">
+        <div class="pag-ic">📱</div>
+        <div class="pag-info"><div class="pag-nome">TWINT</div><div class="pag-val" id="totTwint">CHF 0.00</div></div>
+      </div>
     </div>
     <div class="secao-titulo"><span class="t">Para onde foi o dinheiro</span><span class="x" id="totalSaidasCat"></span></div>
     <div class="painel" id="painelDonut">
@@ -180,6 +199,13 @@
       <div class="campo so-entrada" id="campoServicoOutroWrap" style="display:none;"><label>Qual serviço?</label><input type="text" id="campoServicoOutro" placeholder="Digite o serviço"></div>
       <div class="campo"><label>Descrição</label><input type="text" id="campoDesc" placeholder="Ex: Compra de esmaltes"></div>
       <div class="campo"><label>Categoria</label><select id="campoCategoria"></select></div>
+      <div class="campo">
+        <label>Forma de pagamento</label>
+        <div class="pag-toggle">
+          <button type="button" id="btnDinheiro" onclick="setPagamento('Dinheiro')">💵 Dinheiro</button>
+          <button type="button" id="btnTwint" onclick="setPagamento('TWINT')">📱 TWINT</button>
+        </div>
+      </div>
       <div class="campo"><label>Data</label><input type="date" id="campoData"></div>
       <div class="modal-botoes">
         <button class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
@@ -208,7 +234,7 @@
   const coresSaida = ['#B5485B','#C9A86A','#8C6D7A','#A8745C','#6B8E7F','#B08968','#9A8E8E','#7A6A70'];
   const servicos = ['Alongamento', 'Manutenção', 'Banho de Gel', 'Manicure semi permanente', 'Pedicure semi permanente', 'Máquina EMS', 'Cílios Pose', 'Cílios Manutenção', 'Produtos da Boticário', 'Outro'];
 
-  let lancamentos = {}, mesVisivel = new Date(), tipoAtual = 'saida', editandoId = null, filtroAtual = 'todos', donutChart = null;
+  let lancamentos = {}, mesVisivel = new Date(), tipoAtual = 'saida', editandoId = null, filtroAtual = 'todos', donutChart = null, pagamentoAtual = 'Dinheiro';
   const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
   const sync = document.getElementById('sync'), syncTxt = document.getElementById('sync-txt');
 
@@ -224,6 +250,11 @@
 
   window.mudarMes = function(d) { mesVisivel = new Date(mesVisivel.getFullYear(), mesVisivel.getMonth()+d, 1); render(); };
   window.setFiltro = function(f) { filtroAtual = f; document.querySelectorAll('#filtros button').forEach(b => b.classList.toggle('ativo', b.dataset.f === f)); renderLista(); };
+  window.setPagamento = function(p) {
+    pagamentoAtual = p;
+    document.getElementById('btnDinheiro').className = p === 'Dinheiro' ? 'sel' : '';
+    document.getElementById('btnTwint').className = p === 'TWINT' ? 'sel' : '';
+  };
   window.setTipo = function(t) {
     tipoAtual = t;
     document.getElementById('btnEntrada').className = t === 'entrada' ? 'sel-ent' : '';
@@ -259,6 +290,7 @@
     document.getElementById('campoServicoOutro').value = '';
     document.getElementById('campoData').value = new Date().toISOString().slice(0,10);
     setTipo('saida');
+    setPagamento('Dinheiro');
     document.getElementById('modalBg').classList.add('aberto');
   };
   window.editarLanc = function(id) {
@@ -270,6 +302,7 @@
     document.getElementById('campoServicoOutro').value = '';
     document.getElementById('campoData').value = l.data;
     setTipo(l.tipo);
+    setPagamento(l.pagamento || 'Dinheiro');
     preencherCategorias(l.categoria);
     // Se o serviço salvo estiver na lista, seleciona; senão põe em "Outro" e mostra o campo
     if (l.tipo === 'entrada' && l.servico) {
@@ -291,7 +324,7 @@
     const data = document.getElementById('campoData').value;
     if (!valor || valor <= 0) { alert('Digite um valor válido.'); return; }
     if (!data) { alert('Escolha a data.'); return; }
-    const dados = { tipo: tipoAtual, valor, desc, categoria, data };
+    const dados = { tipo: tipoAtual, valor, desc, categoria, data, pagamento: pagamentoAtual };
     if (tipoAtual === 'entrada') {
       dados.cliente = document.getElementById('campoCliente').value.trim();
       let serv = document.getElementById('campoServico').value;
@@ -319,6 +352,17 @@
     document.getElementById('saldoMes').innerHTML = '<span class="cur">CHF</span>' + Number(s.saldo).toLocaleString('de-CH',{minimumFractionDigits:2,maximumFractionDigits:2});
     document.getElementById('entMes').textContent = fmt(s.ent);
     document.getElementById('saiMes').textContent = fmt(s.sai);
+    // Totais de ENTRADAS por forma de pagamento
+    let totDin = 0, totTw = 0;
+    ids.forEach(id => {
+      const l = lancamentos[id];
+      if (l.tipo === 'entrada') {
+        if (l.pagamento === 'TWINT') totTw += +l.valor;
+        else totDin += +l.valor; // sem pagamento definido conta como dinheiro
+      }
+    });
+    document.getElementById('totDinheiro').textContent = fmt(totDin);
+    document.getElementById('totTwint').textContent = fmt(totTw);
     const mesAnt = new Date(mesVisivel.getFullYear(), mesVisivel.getMonth()-1, 1);
     const sAnt = somas(idsDoMes(mesAnt));
     const comp = document.getElementById('comparativo');
@@ -373,17 +417,22 @@
     el.innerHTML = ids.map(id => {
       const l = lancamentos[id], isEnt = l.tipo === 'entrada', sinal = isEnt ? '+ ' : '− ';
       let titulo, subtitulo;
+      const pagIcon = l.pagamento === 'TWINT' ? '📱' : (l.pagamento === 'Dinheiro' ? '💵' : '');
+      const pagTxt = l.pagamento ? (pagIcon + ' ' + l.pagamento) : '';
       if (isEnt) {
-        // Entrada: cliente em destaque, serviço + data embaixo
+        // Entrada: cliente em destaque, serviço + data + pagamento embaixo
         titulo = l.cliente ? l.cliente : (l.servico || l.desc || l.categoria);
         const partes = [];
         if (l.servico) partes.push(l.servico);
         else if (l.desc) partes.push(l.desc);
         partes.push(dataFmt(l.data));
+        if (pagTxt) partes.push(pagTxt);
         subtitulo = partes.join(' · ');
       } else {
         titulo = l.desc || l.categoria;
-        subtitulo = l.categoria + ' · ' + dataFmt(l.data);
+        const partes = [l.categoria, dataFmt(l.data)];
+        if (pagTxt) partes.push(pagTxt);
+        subtitulo = partes.join(' · ');
       }
       return '<div class="lanc ' + (isEnt?'ent':'sai') + '"><div class="marca-lat"></div><div class="info"><div class="desc">' + esc(titulo) + '</div><div class="meta">' + esc(subtitulo) + '</div></div><div class="valor">' + sinal + fmt(l.valor).replace('CHF ','') + '</div><div class="acoes"><button onclick="editarLanc(\'' + id + '\')">✎</button><button onclick="apagarLanc(\'' + id + '\')">✕</button></div></div>';
     }).join('');
