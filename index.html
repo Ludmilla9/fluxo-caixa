@@ -140,6 +140,36 @@
   .modal-botoes button { flex: 1; padding: 15px; border-radius: 12px; border: none; font-size: 15px; font-weight: 600; cursor: pointer; }
   .btn-cancelar { background: var(--cartao); border: 1px solid var(--linha) !important; color: var(--cinza-2); }
   .btn-salvar { background: var(--tinta); color: #fff; }
+  .fech-card .fech-linha .v-ini { color: var(--cinza-2); font-weight: 600; }
+  .inicio-card { background: var(--cartao); border: 1px solid var(--linha); border-radius: 14px; padding: 15px; box-shadow: 0 2px 10px rgba(43,32,36,0.04); }
+  .inicio-cols { display: flex; gap: 11px; }
+  .inicio-cols > div { flex: 1; }
+  .inicio-cols .nm { font-size: 11.5px; color: var(--cinza); letter-spacing: 0.5px; text-transform: uppercase; }
+  .inicio-cols .vl { font-size: 17px; font-weight: 700; font-family: Georgia, serif; color: var(--tinta); margin-top: 3px; }
+  .inicio-rod { display: flex; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid var(--linha); margin-top: 13px; padding-top: 12px; }
+  .inicio-rod .nota { font-size: 11.5px; line-height: 1.5; color: var(--cinza); }
+  .inicio-btn { flex: 0 0 auto; background: var(--tinta); color: #fff; border: none; padding: 10px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .inicio-btn:active { transform: scale(0.97); }
+  .sem-card { background: var(--cartao); border: 1px solid var(--linha); border-radius: 14px; padding: 14px 15px; margin-bottom: 10px; box-shadow: 0 2px 10px rgba(43,32,36,0.04); }
+  .sem-card.atual { border-color: var(--champagne); box-shadow: 0 2px 14px rgba(201,168,106,0.25); }
+  .sem-card.vazia { background: transparent; box-shadow: none; padding: 11px 15px; }
+  .sem-cab { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .sem-nome { font-size: 12.5px; font-weight: 600; color: var(--cinza-2); letter-spacing: 0.3px; }
+  .sem-badge { font-size: 10px; letter-spacing: 0.8px; text-transform: uppercase; font-weight: 700; color: #8A6A2E; background: #F6EEDC; padding: 3px 9px; border-radius: 10px; }
+  .sem-vazio { font-size: 12px; color: var(--cinza); margin-top: 4px; }
+  .sem-lucro { margin-top: 10px; }
+  .sem-lucro .lab { font-size: 10.5px; letter-spacing: 0.5px; text-transform: uppercase; color: var(--cinza); }
+  .sem-lucro .val { font-size: 23px; font-weight: 700; font-family: Georgia, serif; color: var(--tinta); margin-top: 2px; }
+  .sem-lucro .val.neg { color: var(--vinho); }
+  .sem-duo { display: flex; gap: 11px; margin-top: 10px; }
+  .sem-duo > div { flex: 1; font-size: 12px; color: var(--cinza); display: flex; justify-content: space-between; }
+  .sem-duo .v-ent { color: var(--verde); font-weight: 600; }
+  .sem-duo .v-sai { color: var(--vinho); font-weight: 600; }
+  .sem-pag { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; color: var(--cinza); border-top: 1px solid var(--linha); margin-top: 10px; padding-top: 9px; }
+  .sem-pag + .sem-pag { margin-top: 8px; padding-top: 8px; }
+  .sem-pag .rot { color: var(--cinza-2); font-weight: 600; white-space: nowrap; }
+  .sem-pag .e { color: var(--verde); font-weight: 600; }
+  .sem-pag .s { color: var(--vinho); font-weight: 600; }
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 </style>
 </head>
@@ -155,7 +185,7 @@
       <button onclick="mudarMes(1)">&rsaquo;</button>
     </div>
     <div class="saldo-hero">
-      <div class="lab">Saldo do mês</div>
+      <div class="lab">Lucro do mês</div>
       <div class="val" id="saldoMes"><span class="cur">CHF</span>0.00</div>
       <div class="comp" id="comparativo">—</div>
     </div>
@@ -176,22 +206,37 @@
         <div class="pag-info"><div class="pag-nome">TWINT</div><div class="pag-val" id="totTwint">CHF 0.00</div></div>
       </div>
     </div>
+    <div class="secao-titulo"><span class="t">Começo do mês</span><span class="x">fora do lucro</span></div>
+    <div class="inicio-card">
+      <div class="inicio-cols">
+        <div><div class="nm">💵 Dinheiro</div><div class="vl" id="iniDinTxt">CHF 0.00</div></div>
+        <div><div class="nm">📱 TWINT</div><div class="vl" id="iniTwTxt">CHF 0.00</div></div>
+      </div>
+      <div class="inicio-rod">
+        <div class="nota">Com quanto você abriu o caixa. Não entra no lucro nem nas entradas, só no "Deveria ter".</div>
+        <button class="inicio-btn" onclick="abrirInicio()">Definir</button>
+      </div>
+    </div>
     <div class="secao-titulo"><span class="t">Fechamento de caixa</span></div>
     <div class="fechamento">
       <div class="fech-card">
         <div class="fech-cab"><span class="ic">💵</span> Dinheiro</div>
+        <div class="fech-linha"><span>Começou com</span><span class="v-ini" id="fechDinIni">CHF 0.00</span></div>
         <div class="fech-linha"><span>Entrou</span><span class="v-ent" id="fechDinEnt">CHF 0.00</span></div>
         <div class="fech-linha"><span>Saiu</span><span class="v-sai" id="fechDinSai">CHF 0.00</span></div>
         <div class="fech-saldo"><div class="lab">Deveria ter</div><div class="val" id="fechDinSaldo">CHF 0.00</div></div>
       </div>
       <div class="fech-card">
         <div class="fech-cab"><span class="ic">📱</span> TWINT</div>
+        <div class="fech-linha"><span>Começou com</span><span class="v-ini" id="fechTwIni">CHF 0.00</span></div>
         <div class="fech-linha"><span>Entrou</span><span class="v-ent" id="fechTwEnt">CHF 0.00</span></div>
         <div class="fech-linha"><span>Saiu</span><span class="v-sai" id="fechTwSai">CHF 0.00</span></div>
         <div class="fech-saldo"><div class="lab">Deveria ter</div><div class="val" id="fechTwSaldo">CHF 0.00</div></div>
       </div>
     </div>
     <div class="fech-aviso">💡 Isto conta só o que passou por aqui (as vendas do salão). Se você recebeu outras coisas no TWINT ou no dinheiro (ex: Boticário), some esses valores por fora na hora do fechamento.</div>
+    <div class="secao-titulo"><span class="t">Semana a semana</span><span class="x">segunda a domingo</span></div>
+    <div id="listaSemanas"></div>
     <div class="secao-titulo"><span class="t">Para onde foi o dinheiro</span><span class="x" id="totalSaidasCat"></span></div>
     <div class="painel" id="painelDonut">
       <div class="donut-wrap">
@@ -240,6 +285,19 @@
       </div>
     </div>
   </div>
+<div class="modal-bg" id="modalInicio">
+    <div class="modal">
+      <div class="puxador"></div>
+      <h2 id="inicioTitulo">Começo do mês</h2>
+      <div class="campo valor-grande"><label>💵 Dinheiro no caixa (CHF)</label><input type="number" id="campoIniDin" inputmode="decimal" placeholder="0.00" step="0.05"></div>
+      <div class="campo valor-grande"><label>📱 TWINT (CHF)</label><input type="number" id="campoIniTw" inputmode="decimal" placeholder="0.00" step="0.05"></div>
+      <div class="fech-aviso" style="margin-top:4px;background:var(--verde-bg);color:var(--verde);">Esse valor é só o ponto de partida do caixa. Ele <b>não</b> entra no lucro nem nas entradas do mês.</div>
+      <div class="modal-botoes">
+        <button class="btn-cancelar" onclick="fecharInicio()">Cancelar</button>
+        <button class="btn-salvar" onclick="salvarInicio()">Salvar</button>
+      </div>
+    </div>
+  </div>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script>
@@ -255,13 +313,14 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
   const fluxoRef = db.ref('fluxoCaixa');
+  const inicioRef = db.ref('fluxoCaixaInicio'); // saldo inicial de cada mês, separado dos lançamentos
 
   const categoriasEntrada = ['Serviços (unhas)', 'Serviços (EMS)', 'Serviços (cílios)', 'Venda de produtos', 'Outros'];
   const categoriasSaida = ['Material', 'Aluguel', 'Transporte', 'Comida', 'Equipamentos', 'Marketing', 'Contas', 'Outros'];
   const coresSaida = ['#B5485B','#C9A86A','#8C6D7A','#A8745C','#6B8E7F','#B08968','#9A8E8E','#7A6A70'];
   const servicos = ['Alongamento', 'Manutenção', 'Banho de Gel', 'Manicure semi permanente', 'Pedicure semi permanente', 'Máquina EMS', 'Cílios Pose', 'Cílios Manutenção', 'Produtos da Boticário', 'Outro'];
 
-  let lancamentos = {}, mesVisivel = new Date(), tipoAtual = 'saida', editandoId = null, filtroAtual = 'todos', donutChart = null, pagamentoAtual = 'Dinheiro';
+  let lancamentos = {}, inicioMap = {}, mesVisivel = new Date(), tipoAtual = 'saida', editandoId = null, filtroAtual = 'todos', donutChart = null, pagamentoAtual = 'Dinheiro';
   const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
   const sync = document.getElementById('sync'), syncTxt = document.getElementById('sync-txt');
 
@@ -270,6 +329,7 @@
     sync.classList.add('on'); syncTxt.textContent = 'Sincronizado';
     render();
   }, () => { syncTxt.textContent = 'Sem conexão'; });
+  inicioRef.on('value', (snap) => { inicioMap = snap.val() || {}; render(); });
 
   function chaveMes(d) { return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0'); }
   function fmt(v) { return 'CHF ' + Number(v).toLocaleString('de-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
@@ -395,13 +455,19 @@
     });
     document.getElementById('totDinheiro').textContent = fmt(totDin);
     document.getElementById('totTwint').textContent = fmt(totTw);
-    // Fechamento de caixa: saldo = entrou - saiu, por forma de pagamento
+    // Começo do mês (fica FORA do lucro: só entra no "Deveria ter" do fechamento)
+    const ini = inicioDoMes(mesVisivel);
+    document.getElementById('iniDinTxt').textContent = fmt(ini.dinheiro);
+    document.getElementById('iniTwTxt').textContent = fmt(ini.twint);
+    document.getElementById('fechDinIni').textContent = fmt(ini.dinheiro);
+    document.getElementById('fechTwIni').textContent = fmt(ini.twint);
+    // Fechamento de caixa: deveria ter = começou com + entrou - saiu, por forma de pagamento
     document.getElementById('fechDinEnt').textContent = fmt(totDin);
     document.getElementById('fechDinSai').textContent = fmt(saiDin);
-    document.getElementById('fechDinSaldo').textContent = fmt(totDin - saiDin);
+    document.getElementById('fechDinSaldo').textContent = fmt(ini.dinheiro + totDin - saiDin);
     document.getElementById('fechTwEnt').textContent = fmt(totTw);
     document.getElementById('fechTwSai').textContent = fmt(saiTw);
-    document.getElementById('fechTwSaldo').textContent = fmt(totTw - saiTw);
+    document.getElementById('fechTwSaldo').textContent = fmt(ini.twint + totTw - saiTw);
     const mesAnt = new Date(mesVisivel.getFullYear(), mesVisivel.getMonth()-1, 1);
     const sAnt = somas(idsDoMes(mesAnt));
     const comp = document.getElementById('comparativo');
@@ -411,7 +477,71 @@
       else if (dif > 0) comp.innerHTML = 'Gastou <b class="down">' + abs + '% a mais</b> que ' + meses[mesAnt.getMonth()].toLowerCase();
       else comp.innerHTML = 'Gastou <b class="up">' + abs + '% a menos</b> que ' + meses[mesAnt.getMonth()].toLowerCase();
     } else { comp.textContent = ids.length ? 'Primeiro mês com lançamentos' : 'Sem lançamentos neste mês'; }
-    renderCategorias(ids, s.sai); renderDonut(ids, s.sai); renderLista();
+    renderSemanas(ids); renderCategorias(ids, s.sai); renderDonut(ids, s.sai); renderLista();
+  }
+
+  function inicioDoMes(d) { const r = inicioMap[chaveMes(d)] || {}; return { dinheiro: +r.dinheiro || 0, twint: +r.twint || 0 }; }
+  window.abrirInicio = function() {
+    const ini = inicioDoMes(mesVisivel);
+    document.getElementById('inicioTitulo').textContent = 'Começo de ' + meses[mesVisivel.getMonth()] + ' ' + mesVisivel.getFullYear();
+    document.getElementById('campoIniDin').value = ini.dinheiro || '';
+    document.getElementById('campoIniTw').value = ini.twint || '';
+    document.getElementById('modalInicio').classList.add('aberto');
+  };
+  window.fecharInicio = function() { document.getElementById('modalInicio').classList.remove('aberto'); };
+  window.salvarInicio = function() {
+    const arred = v => Math.round(v * 100) / 100;
+    const din = arred(parseFloat(document.getElementById('campoIniDin').value) || 0);
+    const tw = arred(parseFloat(document.getElementById('campoIniTw').value) || 0);
+    if (din < 0 || tw < 0) { alert('Use valores positivos (ou deixe em branco).'); return; }
+    const ref = inicioRef.child(chaveMes(mesVisivel));
+    const aviso = err => { if (err) alert('Não consegui salvar o começo do mês. Confira a internet e tente de novo.'); };
+    if (din === 0 && tw === 0) ref.remove(aviso); else ref.set({ dinheiro: din, twint: tw }, aviso);
+    fecharInicio();
+  };
+
+  // Semanas de segunda a domingo, cortadas nos limites do mês (assim a soma das semanas = total do mês)
+  function semanasDoMes(d) {
+    const y = d.getFullYear(), m = d.getMonth(), n = new Date(y, m + 1, 0).getDate(), sem = [];
+    let ini = 1;
+    for (let dia = 1; dia <= n; dia++) {
+      const dow = (new Date(y, m, dia).getDay() + 6) % 7; // 0 = segunda ... 6 = domingo
+      if (dow === 6 || dia === n) { sem.push({ ini, fim: dia }); ini = dia + 1; }
+    }
+    return sem;
+  }
+
+  function renderSemanas(ids) {
+    const sems = semanasDoMes(mesVisivel).map(s => ({ ini: s.ini, fim: s.fim, entDin: 0, entTw: 0, saiDin: 0, saiTw: 0, n: 0 }));
+    ids.forEach(id => {
+      const l = lancamentos[id], dia = parseInt((l.data || '').slice(8, 10), 10);
+      const s = sems.find(x => dia >= x.ini && dia <= x.fim);
+      if (!s) return;
+      const v = +l.valor, tw = l.pagamento === 'TWINT';
+      s.n++;
+      if (l.tipo === 'entrada') { if (tw) s.entTw += v; else s.entDin += v; }
+      else { if (tw) s.saiTw += v; else s.saiDin += v; }
+    });
+    const hoje = new Date();
+    const mesAtual = hoje.getFullYear() === mesVisivel.getFullYear() && hoje.getMonth() === mesVisivel.getMonth();
+    const abrev = meses[mesVisivel.getMonth()].slice(0, 3).toLowerCase();
+    const dd = n => String(n).padStart(2, '0');
+    document.getElementById('listaSemanas').innerHTML = sems.map((s, i) => {
+      const faixa = s.ini === s.fim ? dd(s.ini) + ' ' + abrev : dd(s.ini) + ' a ' + dd(s.fim) + ' ' + abrev;
+      const nome = 'Semana ' + (i + 1) + ' · ' + faixa;
+      const atual = mesAtual && hoje.getDate() >= s.ini && hoje.getDate() <= s.fim;
+      if (s.n === 0) {
+        return '<div class="sem-card vazia' + (atual ? ' atual' : '') + '"><div class="sem-cab"><span class="sem-nome">' + nome + '</span>' + (atual ? '<span class="sem-badge">esta semana</span>' : '') + '</div><div class="sem-vazio">Sem lançamentos</div></div>';
+      }
+      const ent = s.entDin + s.entTw, sai = s.saiDin + s.saiTw, lucro = ent - sai;
+      return '<div class="sem-card' + (atual ? ' atual' : '') + '">'
+        + '<div class="sem-cab"><span class="sem-nome">' + nome + '</span>' + (atual ? '<span class="sem-badge">esta semana</span>' : '') + '</div>'
+        + '<div class="sem-lucro"><div class="lab">Lucro da semana</div><div class="val' + (lucro < 0 ? ' neg' : '') + '">' + fmt(lucro) + '</div></div>'
+        + '<div class="sem-duo"><div><span>Entrou</span><span class="v-ent">' + fmt(ent) + '</span></div><div><span>Saiu</span><span class="v-sai">' + fmt(sai) + '</span></div></div>'
+        + '<div class="sem-pag"><span class="rot">💵 Dinheiro</span><span>entrou <span class="e">' + fmt(s.entDin) + '</span> · saiu <span class="s">' + fmt(s.saiDin) + '</span></span></div>'
+        + '<div class="sem-pag"><span class="rot">📱 TWINT</span><span>entrou <span class="e">' + fmt(s.entTw) + '</span> · saiu <span class="s">' + fmt(s.saiTw) + '</span></span></div>'
+        + '</div>';
+    }).join('');
   }
 
   function gastosPorCategoria(ids) {
@@ -480,6 +610,7 @@
   function dataFmt(d) { if (!d) return ''; const p = d.split('-'); return p[2] + '/' + p[1] + '/' + p[0].slice(2); }
   function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
   document.getElementById('modalBg').addEventListener('click', e => { if (e.target.id === 'modalBg') fecharModal(); });
+  document.getElementById('modalInicio').addEventListener('click', e => { if (e.target.id === 'modalInicio') fecharInicio(); });
   setTipo('saida');
 </script>
 </body>
